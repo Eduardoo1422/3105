@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: swagdb
+    ports:
+      - "5432:5432"
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://user:password@db:5432/swagdb
+      API_PORT: 3000
+      JWT_SECRET: supersecret_jwt_key_change_me
+    depends_on:
+      - db

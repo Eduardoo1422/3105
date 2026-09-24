@@ -1,0 +1,20 @@
+{
+  "project": "Swag-External-teste",
+  "platform": "ios",
+  "github": {
+    "owner": "YangJiiii",
+    "repo": "3105"
+  },
+  "provider": "github",
+  "codemagic": {},
+  "bitrise": {},
+  "ios": {
+    "bundleId": "com.apple.mobile.MobileHouseArrest"
+  },
+  "flutter": {
+    "watch": {}
+  },
+  "reactNative": {},
+  "kmp": {},
+  "mobai": {}
+}
