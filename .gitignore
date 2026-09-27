@@ -1,13 +1,16 @@
+# =========================================================
 # macOS
+# =========================================================
 .DS_Store
 
-# Xcode user state
+# =========================================================
+# Xcode / iOS
+# =========================================================
 xcuserdata/
 *.xcuserstate
 *.xccheckout
 *.xcscmblueprint
 
-# Build products
 build/
 DerivedData/
 *.ipa
@@ -20,17 +23,94 @@ DerivedData/
 .build/
 .swiftpm/
 
-# Signing material and local configuration
+# Signing / certificates / secrets
 *.cer
 *.p12
 *.pem
 *.key
 *.mobileprovision
+
+# =========================================================
+# Environment / secrets
+# =========================================================
 .env
 .env.*
 !.env.example
 
-# Local QA artifacts and internal working notes
+backend/.env
+backend/.env.*
+!.env.example
+
+web/.env
+web/.env.*
+!.env.example
+
+# =========================================================
+# Node.js
+# =========================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================================================
+# Node / TypeScript build
+# =========================================================
+dist/
+coverage/
+*.tsbuildinfo
+
+# =========================================================
+# Vite
+# =========================================================
+.vite/
+
+# =========================================================
+# Logs
+# =========================================================
+*.log
+
+apt_errors.log
+apt_update.log
+keep_errors.log
+
+# =========================================================
+# Temporary files
+# =========================================================
+*.tmp
+*.swp
+*~
+*.bak
+
+# =========================================================
+# Editor / IDE
+# =========================================================
+.vscode/
+.idea/
+
+# =========================================================
+# Frontend
+# =========================================================
+web/node_modules/
+web/dist/
+web/.vite/
+
+# =========================================================
+# Backend
+# =========================================================
+backend/node_modules/
+backend/dist/
+backend/coverage/
+
+# =========================================================
+# Prisma
+# =========================================================
+prisma-debug.log
+
+# =========================================================
+# Local QA artifacts / internal notes
+# =========================================================
 /*.png
 /tasks/
 /Tests/
@@ -38,7 +118,22 @@ DerivedData/
 /CONTRIBUTING.md
 /SECURITY.md
 
-# Temporary files
-*.tmp
-*.swp
-*~
+# Node.js dependencies
+**/node_modules/
+
+# Frontend builds
+web/dist/
+
+# Backend build
+backend/dist/
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*

@@ -3,47 +3,45 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-enum LicenseStatus {
-  ACTIVE
-  INACTIVE
-  REVOKED
-  EXPIRED
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
   id        String   @id @default(uuid())
   username  String   @unique
-  password  String   // Hashed
+  password  String
   role      String   @default("ADMIN")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model LicenseKey {
-  id            String        @id @default(uuid())
-  keyIdentifier String        @unique // Public identifier for fast lookup
-  keyHash       String        @unique // Hashed secret
-  status        LicenseStatus @default(ACTIVE)
-  expiresAt     DateTime
-  activatedAt   DateTime?
-  revokedAt     DateTime?
-  maxDevices    Int           @default(1)
-  notes         String?
-  createdBy     String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  devices       Device[]
+  id                   String        @id @default(uuid())
+  keyIdentifier        String        @unique
+  keyHash              String        @unique
+  status               LicenseStatus @default(ACTIVE)
+  durationDays         Int           @default(30)
+  expiresAt            DateTime?
+  activatedAt          DateTime?
+  pausedIndividual     Boolean       @default(false)
+  pausedGlobal         Boolean       @default(false)
+  remainingTimeAtPause BigInt?
+  lastPauseAt          DateTime?
+  revokedAt            DateTime?
+  maxDevices           Int           @default(1)
+  notes                String?
+  createdBy            String?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  devices              Device[]
 }
 
 model Device {
   id               String     @id @default(uuid())
   deviceIdentifier String
   licenseKeyId     String
-  licenseKey       LicenseKey @relation(fields: [licenseKeyId], references: [id])
   platform         String?
   appVersion       String?
   firstSeenAt      DateTime   @default(now())
@@ -51,6 +49,7 @@ model Device {
   active           Boolean    @default(true)
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
+  licenseKey       LicenseKey @relation(fields: [licenseKeyId], references: [id])
 
   @@unique([deviceIdentifier, licenseKeyId])
 }
@@ -60,9 +59,9 @@ model Category {
   name      String
   slug      String    @unique
   enabled   Boolean   @default(true)
-  features  Feature[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  features  Feature[]
 }
 
 model Feature {
@@ -70,44 +69,44 @@ model Feature {
   name        String
   description String
   categoryId  String
-  category    Category   @relation(fields: [categoryId], references: [id])
   iconName    String
   enabled     Boolean    @default(true)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+  category    Category   @relation(fields: [categoryId], references: [id])
   resources   Resource[]
 }
 
 model Resource {
-  id                String            @id @default(uuid())
-  featureId         String
-  feature           Feature           @relation(fields: [featureId], references: [id])
-  filename          String
-  mimeType          String
-  fileSize          Int
-  sha256            String
-  targetBundleId    String
+  id                 String            @id @default(uuid())
+  featureId          String
+  filename           String
+  mimeType           String
+  fileSize           Int
+  sha256             String
+  targetBundleId     String
   targetRelativePath String
-  targetFilename    String
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  versions          ResourceVersion[]
+  targetFilename     String
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  feature            Feature           @relation(fields: [featureId], references: [id])
+  versions           ResourceVersion[]
 }
 
 model ResourceVersion {
-  id                String   @id @default(uuid())
-  resourceId        String
-  resource          Resource @relation(fields: [resourceId], references: [id])
-  version           String
-  filename          String
-  storageKey        String
-  fileSize          Int
-  sha256            String
-  targetBundleId    String
+  id                 String   @id @default(uuid())
+  resourceId         String
+  version            String
+  filename           String
+  storageKey         String
+  fileSize           Int
+  sha256             String
+  targetBundleId     String
   targetRelativePath String
-  targetFilename    String
-  releaseNotes      String?
-  createdAt         DateTime @default(now())
+  targetFilename     String
+  releaseNotes       String?
+  createdAt          DateTime @default(now())
+  resource           Resource @relation(fields: [resourceId], references: [id])
 }
 
 model AuditLog {
@@ -117,4 +116,12 @@ model AuditLog {
   targetId  String?
   details   String?
   createdAt DateTime @default(now())
+}
+
+enum LicenseStatus {
+  ACTIVE
+  PAUSED
+  INACTIVE
+  REVOKED
+  EXPIRED
 }
