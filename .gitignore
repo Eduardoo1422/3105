@@ -137,3 +137,4 @@ backend/dist/
 npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
+.vercel
