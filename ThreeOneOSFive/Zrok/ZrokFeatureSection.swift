@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct SwagFeatureSection: View {
-    @EnvironmentObject var featureManager: SwagFeatureManager
+struct ZrokFeatureSection: View {
+    @EnvironmentObject var featureManager: ZrokFeatureManager
     let category: FeatureCategory
     
     var body: some View {
@@ -11,7 +11,7 @@ struct SwagFeatureSection: View {
                 .foregroundColor(.white)
             
             ForEach(featureManager.features.filter { $0.category == category }) { feature in
-                SwagFeatureRow(feature: feature)
+                ZrokFeatureRow(feature: feature)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

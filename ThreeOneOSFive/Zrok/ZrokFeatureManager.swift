@@ -1,7 +1,7 @@
 import SwiftUI
 import Combine
 
-class SwagFeatureManager: ObservableObject {
+class ZrokFeatureManager: ObservableObject {
     @Published var features: [Feature] = []
     @Published var categories: [FeatureCategory] = []
     

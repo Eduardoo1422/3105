@@ -20,7 +20,7 @@ struct ContentView: View {
 
     private var compactLayout: some View {
         TabView(selection: $selectedTab) {
-            SwagHomeView()
+            ZrokHomeView()
                 .tabItem {
                     Label("Activation", systemImage: "bolt.fill")
                 }
@@ -49,10 +49,10 @@ struct ContentView: View {
                 }
                 .buttonStyle(.plain)
             }
-            .navigationTitle("SWAG-EXTERNAL")
+            .navigationTitle("ZROK")
         } detail: {
             if selectedTab == 0 {
-                SwagHomeView()
+                ZrokHomeView()
             } else {
                 InfoView()
             }

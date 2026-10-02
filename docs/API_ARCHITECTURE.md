@@ -1,4 +1,4 @@
-# Arquitetura do Sistema SWAG-EXTERNAL (Backend e API)
+# Arquitetura do Sistema ZROK (Backend e API)
 
 ## 1. Arquitetura Proposta
 O sistema utilizará uma API centralizada em Node.js com TypeScript, servindo como a única fonte de verdade para o aplicativo iOS, o futuro painel web administrativo e o bot do Telegram.

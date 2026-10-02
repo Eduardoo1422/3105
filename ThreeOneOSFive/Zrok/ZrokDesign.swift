@@ -1,8 +1,8 @@
 import SwiftUI
 
-/// Visual tokens scoped to the Swag screens so the dark/minimalist language
+/// Visual tokens scoped to the Zrok screens so the dark/minimalist language
 /// stays consistent and does not depend on the 3105 orange accent.
-enum SwagTheme {
+enum ZrokTheme {
     static let background = Color(white: 0.0)
     static let cardBackground = Color(red: 0.07, green: 0.07, blue: 0.08)
     static let cardBorder = Color(white: 0.19)
@@ -18,9 +18,9 @@ enum SwagTheme {
     static let outerPadding: CGFloat = 20
 }
 
-/// A reusable dark card surface that is shared by every Swag screen so the
+/// A reusable dark card surface that is shared by every Zrok screen so the
 /// look stays identical between the Activation and Info tabs.
-struct SwagCard<Content: View>: View {
+struct ZrokCard<Content: View>: View {
     let content: Content
 
     init(@ViewBuilder content: () -> Content) {
@@ -30,12 +30,12 @@ struct SwagCard<Content: View>: View {
     var body: some View {
         content
             .padding()
-            .background(SwagTheme.cardBackground)
+            .background(ZrokTheme.cardBackground)
             .overlay(
-                RoundedRectangle(cornerRadius: SwagTheme.cardCornerRadius, style: .continuous)
-                    .stroke(SwagTheme.cardBorder, lineWidth: 0.5)
+                RoundedRectangle(cornerRadius: ZrokTheme.cardCornerRadius, style: .continuous)
+                    .stroke(ZrokTheme.cardBorder, lineWidth: 0.5)
             )
-            .cornerRadius(SwagTheme.cardCornerRadius, style: .continuous)
+            .cornerRadius(ZrokTheme.cardCornerRadius, style: .continuous)
     }
 }
 

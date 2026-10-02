@@ -41,7 +41,7 @@ struct FeatureCategory: Identifiable, Equatable {
 ///
 /// Internal replacement metadata (`targetBundleId`, `targetRelativePath`,
 /// `targetFilename`, `storageKey`): these are kept on the model strictly so the
-/// `SwagFeatureManager` can hand them to `FileReplacementService` later. They
+/// `ZrokFeatureManager` can hand them to `FileReplacementService` later. They
 /// are **never** surfaced to any View.
 struct Feature: Identifiable, Equatable {
     let id: UUID

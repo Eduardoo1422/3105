@@ -1,4 +1,4 @@
-# Arquitetura do SWAG-EXTERNAL (Baseado no 3105)
+# Arquitetura do ZROK (Baseado no 3105)
 
 ## A. Estrutura do projeto
 O projeto é estruturado em Swift com componentes em Objective-C para interações de baixo nível (kernel, exploração, helpers).
@@ -32,7 +32,7 @@ Serviços principais operam sobre `FileManager` e APIs de baixo nível (kernel/s
 - `OnboardingView.swift` (Será adaptado ou refeito).
 
 ## F. Componentes que precisarão ser adaptados
-- `App.swift` (Inicialização e navegação para se adequar ao fluxo do Swag-External).
+- `App.swift` (Inicialização e navegação para se adequar ao fluxo do Zrok).
 - `PatchProjectStore` e `PackageRepositoryStore` (Provável integração com sistema de licenças/keys).
 - `Info.plist` (Bundle Identifier, nome do app).
 
@@ -60,8 +60,8 @@ Integrado aos serviços de patches (`PatchProjectStore` e `FileManagerService` p
 - Lógica de baixo nível de manipulação de arquivos (serviços em `helpers/`).
 - Estrutura de modelos que impactam o sistema de patches.
 
-## N. Plano recomendado para transformar 3105 em Swag-External
+## N. Plano recomendado para transformar 3105 em Zrok
 1. Renomeação do projeto (interna/meta).
 2. Implementação da nova interface sobre a estrutura existente.
 3. Inserção do sistema de chaves/licenciamento nos pontos de entrada (App.swift e serviços críticos).
-4. Refinamento da navegação e onboarding para o estilo Swag-External.
+4. Refinamento da navegação e onboarding para o estilo Zrok.

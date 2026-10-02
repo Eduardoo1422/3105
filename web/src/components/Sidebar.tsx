@@ -22,9 +22,9 @@ export default function Sidebar({ currentTab, onSelectTab, user, onLogout }: Sid
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <div className="sidebar-logo">S</div>
+        <div className="sidebar-logo">Z</div>
         <div>
-          <div className="sidebar-title">SWAG-EXTERNAL</div>
+          <div className="sidebar-title">ZROK</div>
           <div className="sidebar-subtitle">Admin Panel</div>
         </div>
       </div>

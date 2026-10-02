@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct SwagFeatureRow: View {
-    @EnvironmentObject var featureManager: SwagFeatureManager
+struct ZrokFeatureRow: View {
+    @EnvironmentObject var featureManager: ZrokFeatureManager
     let feature: Feature
     
     var body: some View {

@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct SwagHomeView: View {
-    @EnvironmentObject var featureManager: SwagFeatureManager
+struct ZrokHomeView: View {
+    @EnvironmentObject var featureManager: ZrokFeatureManager
     @EnvironmentObject var fileOpCoordinator: FileOperationCoordinator
     
     var body: some View {
@@ -10,10 +10,10 @@ struct SwagHomeView: View {
             
             ScrollView {
                 VStack(spacing: 30) {
-                    SwagGameHeader()
+                    ZrokGameHeader()
                     
                     ForEach(featureManager.categories) { category in
-                        SwagFeatureSection(category: category)
+                        ZrokFeatureSection(category: category)
                     }
                 }
                 .padding()

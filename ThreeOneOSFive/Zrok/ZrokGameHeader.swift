@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SwagGameHeader: View {
+struct ZrokGameHeader: View {
     var body: some View {
         VStack(spacing: 10) {
             Image(systemName: "shield.fill") // Placeholder for app icon
@@ -9,7 +9,7 @@ struct SwagGameHeader: View {
                 .frame(width: 60, height: 60)
                 .foregroundColor(.white)
             
-            Text("SWAG-EXTERNAL")
+            Text("ZROK")
                 .font(.title2.bold())
                 .foregroundColor(.white)
             

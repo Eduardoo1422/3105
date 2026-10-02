@@ -78,13 +78,13 @@
 		3105S002 /* ActivationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S001; };
 		3105S004 /* FeatureRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S003; };
 		3105S006 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S005; };
-		3105S008 /* SwagDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S007; };
-		3105S010 /* SwagFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S009; };
-		3105S012 /* SwagFeatureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S011; };
-		3105S014 /* SwagFeatureRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S013; };
-		3105S016 /* SwagFeatureSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S015; };
-		3105S018 /* SwagGameHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S017; };
-		3105S020 /* SwagModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S019; };
+		3105S008 /* ZrokDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S007; };
+		3105S010 /* ZrokFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S009; };
+		3105S012 /* ZrokFeatureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S011; };
+		3105S014 /* ZrokFeatureRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S013; };
+		3105S016 /* ZrokFeatureSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S015; };
+		3105S018 /* ZrokGameHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S017; };
+		3105S020 /* ZrokModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S019; };
 	/* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -177,13 +177,13 @@
 		3105S001 /* ActivationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivationView.swift; sourceTree = "<group>"; };
 		3105S003 /* FeatureRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureRepository.swift; sourceTree = "<group>"; };
 		3105S005 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
-		3105S007 /* SwagDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwagDesign.swift; sourceTree = "<group>"; };
-		3105S009 /* SwagFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwagFeature.swift; sourceTree = "<group>"; };
-		3105S011 /* SwagFeatureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwagFeatureManager.swift; sourceTree = "<group>"; };
-		3105S013 /* SwagFeatureRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwagFeatureRow.swift; sourceTree = "<group>"; };
-		3105S015 /* SwagFeatureSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwagFeatureSection.swift; sourceTree = "<group>"; };
-		3105S017 /* SwagGameHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwagGameHeader.swift; sourceTree = "<group>"; };
-		3105S019 /* SwagModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwagModels.swift; sourceTree = "<group>"; };
+		3105S007 /* ZrokDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokDesign.swift; sourceTree = "<group>"; };
+		3105S009 /* ZrokFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokFeature.swift; sourceTree = "<group>"; };
+		3105S011 /* ZrokFeatureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokFeatureManager.swift; sourceTree = "<group>"; };
+		3105S013 /* ZrokFeatureRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokFeatureRow.swift; sourceTree = "<group>"; };
+		3105S015 /* ZrokFeatureSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokFeatureSection.swift; sourceTree = "<group>"; };
+		3105S017 /* ZrokGameHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokGameHeader.swift; sourceTree = "<group>"; };
+		3105S019 /* ZrokModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokModels.swift; sourceTree = "<group>"; };
 	/* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,7 +218,7 @@
 				3105A406 /* kexploit */,
 				3105A120 /* Localizable.strings */,
 				3105A031 /* Assets.xcassets */,
-							3105S021 /* Swag */,
+							3105S021 /* Zrok */,
 );
 			path = ThreeOneOSFive;
 			sourceTree = "<group>";
@@ -336,21 +336,21 @@
 			path = kexploit;
 			sourceTree = "<group>";
 		};
-		3105S021 /* Swag */ = {
+		3105S021 /* Zrok */ = {
 			isa = PBXGroup;
 			children = (
 				3105S001 /* ActivationView.swift */,
 				3105S003 /* FeatureRepository.swift */,
 				3105S005 /* InfoView.swift */,
-				3105S007 /* SwagDesign.swift */,
-				3105S009 /* SwagFeature.swift */,
-				3105S011 /* SwagFeatureManager.swift */,
-				3105S013 /* SwagFeatureRow.swift */,
-				3105S015 /* SwagFeatureSection.swift */,
-				3105S017 /* SwagGameHeader.swift */,
-				3105S019 /* SwagModels.swift */,
+				3105S007 /* ZrokDesign.swift */,
+				3105S009 /* ZrokFeature.swift */,
+				3105S011 /* ZrokFeatureManager.swift */,
+				3105S013 /* ZrokFeatureRow.swift */,
+				3105S015 /* ZrokFeatureSection.swift */,
+				3105S017 /* ZrokGameHeader.swift */,
+				3105S019 /* ZrokModels.swift */,
 			);
-			path = Swag;
+			path = Zrok;
 			sourceTree = "<group>";
 		};
 	/* End PBXGroup section */

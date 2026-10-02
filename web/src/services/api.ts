@@ -6,7 +6,7 @@ export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const token = localStorage.getItem('swag_admin_token');
+  const token = localStorage.getItem('zrok_admin_token');
   const headers = new Headers(options.headers);
 
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
@@ -42,12 +42,12 @@ export async function login(
 }
 
 export function saveSession(session: LoginResponse) {
-  localStorage.setItem('swag_admin_token', session.token);
-  localStorage.setItem('swag_admin_user', JSON.stringify(session.user));
+  localStorage.setItem('zrok_admin_token', session.token);
+  localStorage.setItem('zrok_admin_user', JSON.stringify(session.user));
 }
 
 export function getStoredUser(): AuthUser | null {
-  const value = localStorage.getItem('swag_admin_user');
+  const value = localStorage.getItem('zrok_admin_user');
   if (!value) return null;
   try {
     return JSON.parse(value) as AuthUser;
@@ -57,12 +57,12 @@ export function getStoredUser(): AuthUser | null {
 }
 
 export function logout() {
-  localStorage.removeItem('swag_admin_token');
-  localStorage.removeItem('swag_admin_user');
+  localStorage.removeItem('zrok_admin_token');
+  localStorage.removeItem('zrok_admin_user');
 }
 
 export function isAuthenticated() {
-  return Boolean(localStorage.getItem('swag_admin_token'));
+  return Boolean(localStorage.getItem('zrok_admin_token'));
 }
 
 // Admin API Methods
@@ -121,12 +121,12 @@ export async function uploadResource(formData: FormData): Promise<Resource> {
 }
 
 export function getDownloadUrl(id: string): string {
-  const token = localStorage.getItem('swag_admin_token') || '';
+  const token = localStorage.getItem('zrok_admin_token') || '';
   return `${API_URL}/admin/resource/${id}/download?token=${encodeURIComponent(token)}`;
 }
 
 export async function downloadResourceFile(id: string, filename: string): Promise<void> {
-  const token = localStorage.getItem('swag_admin_token') || '';
+  const token = localStorage.getItem('zrok_admin_token') || '';
   const response = await fetch(`${API_URL}/admin/resource/${id}/download`, {
     headers: {
       Authorization: `Bearer ${token}`

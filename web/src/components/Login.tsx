@@ -36,8 +36,8 @@ export default function Login({ onLogin }: LoginProps) {
     <main className="login-page">
       <section className="login-card">
         <div className="brand">
-          <div className="brand-mark">S</div>
-          <h1>SWAG-EXTERNAL</h1>
+          <div className="brand-mark">Z</div>
+          <h1>ZROK</h1>
           <p>Painel administrativo</p>
         </div>
 

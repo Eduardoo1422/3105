@@ -12,7 +12,7 @@ export default function SettingsView({ user }: SettingsViewProps) {
       <div className="card" style={{ maxWidth: '600px' }}>
         <h2 style={{ fontSize: '18px', marginBottom: '8px' }}>System Configuration</h2>
         <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
-          Environment and connectivity parameters for the SWAG-EXTERNAL administrative panel.
+          Environment and connectivity parameters for the ZROK administrative panel.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
