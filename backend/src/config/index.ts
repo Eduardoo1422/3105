@@ -17,7 +17,7 @@ const env = envSchema.parse(process.env);
 
 export const config = {
   dbUrl: env.DATABASE_URL,
-  port: parseInt(env.API_PORT, 10),
+  port: parseInt(process.env.PORT || env.API_PORT, 10),
   jwtSecret: env.JWT_SECRET,
   telegramBotToken: env.TELEGRAM_BOT_TOKEN,
   telegramAdminIds: env.TELEGRAM_ADMIN_IDS.split(',').map(id => id.trim()).filter(Boolean),
