@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: swagdb
+      POSTGRES_DB: zrokdb
     ports:
       - "5432:5432"
   api:
@@ -14,7 +14,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://user:password@db:5432/swagdb
+      DATABASE_URL: postgresql://user:password@db:5432/zrokdb
       API_PORT: 3000
       JWT_SECRET: supersecret_jwt_key_change_me
     depends_on:

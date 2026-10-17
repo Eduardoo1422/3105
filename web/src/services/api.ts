@@ -148,3 +148,20 @@ export async function downloadResourceFile(id: string, filename: string): Promis
   a.remove();
   window.URL.revokeObjectURL(url);
 }
+
+export async function getAppConfig(): Promise<any> {
+  return apiRequest<any>('/admin/config');
+}
+
+export async function saveAppDraft(draft: any): Promise<any> {
+  return apiRequest<any>('/admin/config/draft', {
+    method: 'PUT',
+    body: JSON.stringify(draft),
+  });
+}
+
+export async function publishAppConfig(): Promise<any> {
+  return apiRequest<any>('/admin/config/publish', {
+    method: 'POST',
+  });
+}

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import path from 'path';
 import { LicenseService } from '../services/license.service';
-import { CategoryService, FeatureService, ResourceService, StorageService } from '../services/data.service';
-import { licenseCreateSchema, categoryCreateSchema, featureCreateSchema, resourceCreateSchema } from '../utils/validation';
+import { CategoryService, FeatureService, ResourceService, StorageService, ConfigService } from '../services/data.service';
+import { licenseCreateSchema, categoryCreateSchema, featureCreateSchema, resourceCreateSchema, appConfigSchema, deviceSyncStatusSchema } from '../utils/validation';
 import multer from 'multer';
 
 // Extend Request type to include file
@@ -74,6 +74,14 @@ export const AdminResourceController = {
                 
                 if (!(await FeatureService.exists(validated.featureId))) {
                     return res.status(404).json({ error: 'Feature not found' });
+                }
+
+                // Validate .3105 package magic bytes if file ends with .3105
+                if (req.file.originalname.toLowerCase().endsWith('.3105')) {
+                    const magic = Buffer.from('3105PATCH\0');
+                    if (req.file.buffer.length < 10 || !req.file.buffer.subarray(0, 10).equals(magic)) {
+                        return res.status(400).json({ error: 'Invalid .3105 package: header magic bytes verification failed' });
+                    }
                 }
 
                 const { storageKey, sha256 } = await StorageService.saveFile(req.file.buffer);
@@ -159,6 +167,61 @@ export const ResourceDownloadController = {
             if (e.message.includes('not found') || e.message.includes('Invalid')) {
                 return res.status(404).json({ error: e.message });
             }
+            res.status(400).json({ error: e.message });
+        }
+    }
+};
+
+export const AdminConfigController = {
+    get: async (req: Request, res: Response) => {
+        try {
+            const config = await ConfigService.getConfig();
+            res.json(config);
+        } catch (e: any) {
+            res.status(500).json({ error: e.message });
+        }
+    },
+    updateDraft: async (req: Request, res: Response) => {
+        try {
+            const validated = appConfigSchema.parse(req.body);
+            const updated = await ConfigService.saveDraft(validated);
+            res.json(updated);
+        } catch (e: any) {
+            res.status(400).json({ error: e.message });
+        }
+    },
+    publish: async (req: Request, res: Response) => {
+        try {
+            const updated = await ConfigService.publish();
+            res.json(updated);
+        } catch (e: any) {
+            res.status(400).json({ error: e.message });
+        }
+    },
+    getPublished: async (req: Request, res: Response) => {
+        try {
+            const config = await ConfigService.getConfig();
+            res.json({
+                version: config.publishedVersion || 1,
+                publishedAt: config.publishedAt,
+                config: config.published || {}
+            });
+        } catch (e: any) {
+            res.status(500).json({ error: e.message });
+        }
+    },
+    syncStatus: async (req: Request, res: Response) => {
+        try {
+            const validated = deviceSyncStatusSchema.parse(req.body);
+            const updated = await ConfigService.recordDeviceSync({
+                deviceIdentifier: validated.deviceIdentifier,
+                platform: validated.platform,
+                appVersion: validated.appVersion,
+                syncedVersion: validated.syncedVersion,
+                syncStatus: validated.syncStatus
+            });
+            res.json({ success: true, devices: updated.devices });
+        } catch (e: any) {
             res.status(400).json({ error: e.message });
         }
     }

@@ -6,11 +6,16 @@ struct ZrokHomeView: View {
     
     var body: some View {
         ZStack {
-            Color.black.edgesIgnoringSafeArea(.all)
+            featureManager.syncService.themeBackground
+                .edgesIgnoringSafeArea(.all)
             
             ScrollView {
-                VStack(spacing: 30) {
-                    ZrokGameHeader()
+                VStack(spacing: 20) {
+                    ZrokGameHeader(syncService: featureManager.syncService)
+                    
+                    // Render published dynamic tabs & elements
+                    ZrokPublishedTabsView(syncService: featureManager.syncService)
+                        .frame(minHeight: 280)
                     
                     ForEach(featureManager.categories) { category in
                         ZrokFeatureSection(category: category)
@@ -22,6 +27,7 @@ struct ZrokHomeView: View {
         .preferredColorScheme(.dark)
         .onAppear {
             featureManager.setCoordinator(fileOpCoordinator)
+            featureManager.syncService.fetchPublishedConfig(manual: false)
         }
     }
 }

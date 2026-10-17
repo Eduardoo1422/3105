@@ -3,9 +3,9 @@
 // module is imported. This matters because `src/config/index.ts` parses the
 // environment ONCE at import time, so these variables must be set first.
 process.env.DATABASE_URL =
-  'postgresql://test:test@localhost:5432/test_swag_external?schema=public';
+  'postgresql://test:test@localhost:5432/test_zrok?schema=public';
 process.env.JWT_SECRET = 'test-jwt-secret-key-with-at-least-32-chars';
-process.env.STORAGE_PATH = '/tmp/opencode/swag-test-storage';
+process.env.STORAGE_PATH = '/tmp/opencode/zrok-test-storage';
 process.env.MAX_UPLOAD_SIZE = '10485760'; // 10MB
 process.env.API_PORT = '3000';
 process.env.TELEGRAM_BOT_TOKEN = 'test-token';

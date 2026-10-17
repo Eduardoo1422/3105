@@ -1,6 +1,6 @@
 import type { AuthUser } from '../types';
 
-export type TabType = 'dashboard' | 'licenses' | 'categories' | 'features' | 'resources' | 'settings';
+export type TabType = 'dashboard' | 'licenses' | 'categories' | 'features' | 'resources' | 'editor' | 'settings';
 
 interface SidebarProps {
   currentTab: TabType;
@@ -16,6 +16,7 @@ export default function Sidebar({ currentTab, onSelectTab, user, onLogout }: Sid
     { id: 'categories', label: 'Categories', icon: '📁' },
     { id: 'features', label: 'Features', icon: '⚡' },
     { id: 'resources', label: 'Resources / Files', icon: '📦' },
+    { id: 'editor', label: 'App Editor', icon: '📱' },
     { id: 'settings', label: 'Settings', icon: '⚙️' },
   ];
 

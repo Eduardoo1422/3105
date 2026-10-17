@@ -118,6 +118,12 @@ model AuditLog {
   createdAt DateTime @default(now())
 }
 
+model AppConfig {
+  id        String   @id @default("default")
+  config    String   @default("{}")
+  updatedAt DateTime @updatedAt
+}
+
 enum LicenseStatus {
   ACTIVE
   PAUSED

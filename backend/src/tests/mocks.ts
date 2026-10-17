@@ -52,6 +52,10 @@ const mockPrismaClient: Record<string, any> = {
   auditLog: {
     create: jest.fn(),
   },
+  appConfig: {
+    findUnique: jest.fn(),
+    upsert: jest.fn(),
+  },
   $transaction: jest.fn(),
   $connect: jest.fn(),
   $disconnect: jest.fn(),

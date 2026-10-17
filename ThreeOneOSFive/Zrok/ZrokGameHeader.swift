@@ -1,26 +1,28 @@
 import SwiftUI
 
 struct ZrokGameHeader: View {
+    @ObservedObject var syncService: RemoteAppConfigSyncService
+
     var body: some View {
         VStack(spacing: 10) {
-            Image(systemName: "shield.fill") // Placeholder for app icon
+            Image(systemName: "shield.fill")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 60, height: 60)
                 .foregroundColor(.white)
             
-            Text("ZROK")
+            Text(syncService.heroTitle)
                 .font(.title2.bold())
                 .foregroundColor(.white)
             
-            Text("Pronto para injetar")
+            Text(syncService.heroSubtitle)
                 .font(.subheadline)
                 .foregroundColor(.gray)
             
             HStack {
                 Image(systemName: "gamecontroller.fill")
                     .foregroundColor(.yellow)
-                Text("Free Fire")
+                Text("Free Fire (v\(syncService.publishedVersion))")
                     .foregroundColor(.white)
             }
             .padding(.horizontal, 12)

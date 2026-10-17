@@ -35,7 +35,7 @@ struct ZrokCard<Content: View>: View {
                 RoundedRectangle(cornerRadius: ZrokTheme.cardCornerRadius, style: .continuous)
                     .stroke(ZrokTheme.cardBorder, lineWidth: 0.5)
             )
-            .cornerRadius(ZrokTheme.cardCornerRadius, style: .continuous)
+            .cornerRadius(ZrokTheme.cardCornerRadius)
     }
 }
 

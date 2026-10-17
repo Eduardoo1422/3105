@@ -1,7 +1,7 @@
 {
-  "name": "swag-external-backend",
+  "name": "zrok-core",
   "version": "1.0.0",
-  "description": "Backend API for Swag-External",
+  "description": "ZROK Core API",
   "main": "dist/app.js",
   "scripts": {
     "build": "tsc",

@@ -8,6 +8,7 @@ import LicenseKeysView from './components/views/LicenseKeysView';
 import CategoriesView from './components/views/CategoriesView';
 import FeaturesView from './components/views/FeaturesView';
 import ResourcesView from './components/views/ResourcesView';
+import AppEditorView from './components/views/AppEditorView';
 import SettingsView from './components/views/SettingsView';
 import { getStoredUser, isAuthenticated, logout } from './services/api';
 
@@ -46,6 +47,7 @@ export default function App() {
         {currentTab === 'categories' && <CategoriesView onNotify={showToast} />}
         {currentTab === 'features' && <FeaturesView onNotify={showToast} />}
         {currentTab === 'resources' && <ResourcesView onNotify={showToast} />}
+        {currentTab === 'editor' && <AppEditorView onNotify={showToast} />}
         {currentTab === 'settings' && <SettingsView user={user} />}
       </div>
 

@@ -11,6 +11,7 @@ export default function Header({ currentTab }: HeaderProps) {
     categories: 'Feature Categories',
     features: 'Application Features',
     resources: 'Replacement Resources & Files',
+    editor: 'App Visual Frontend Editor',
     settings: 'System Configuration',
   };
 

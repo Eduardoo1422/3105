@@ -14,7 +14,7 @@ struct ZrokFeatureRow: View {
                 Text(feature.name)
                     .font(.body)
                     .foregroundColor(.white)
-                Text(feature.description)
+                Text(feature.description ?? "")
                     .font(.caption)
                     .foregroundColor(.gray)
             }

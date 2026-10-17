@@ -35,3 +35,43 @@ export const featureCreateSchema = z.object({
   iconName: z.string().min(1),
   enabled: z.boolean().default(true),
 });
+
+export const appConfigSchema = z.object({
+  tabs: z.array(z.object({
+    id: z.string().min(1),
+    name: z.string().min(1),
+    icon: z.string().min(1),
+    order: z.number().int().nonnegative(),
+    elements: z.array(z.object({
+      id: z.string().min(1),
+      name: z.string().min(1),
+      description: z.string().optional(),
+      icon: z.string().min(1),
+      type: z.enum(['toggle', 'action', 'info', 'card', 'separator']),
+      enabled: z.boolean(),
+      order: z.number().int().nonnegative()
+    }))
+  })).min(1),
+  hero: z.object({
+    imageUrl: z.string().optional(),
+    title: z.string().min(1),
+    subtitle: z.string().optional()
+  }),
+  theme: z.object({
+    background: z.string().min(1),
+    cardBackground: z.string().min(1),
+    textColor: z.string().min(1),
+    secondaryText: z.string().min(1),
+    buttonColor: z.string().min(1),
+    accentColor: z.string().min(1),
+    borderColor: z.string().min(1)
+  })
+});
+
+export const deviceSyncStatusSchema = z.object({
+  deviceIdentifier: z.string().min(1).max(128),
+  platform: z.string().optional(),
+  appVersion: z.string().optional(),
+  syncedVersion: z.number().int().positive(),
+  syncStatus: z.enum(['synced', 'pending', 'offline', 'error'])
+});

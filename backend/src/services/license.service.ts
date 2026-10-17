@@ -5,8 +5,10 @@ import { LicenseStatus } from '@prisma/client';
 
 export class LicenseService {
   static async createLicense(durationDays: number, maxDevices: number, notes?: string, adminId?: string) {
-    const rawSecret = crypto.randomUUID().split('-')[0];
-    const keyIdentifier = crypto.randomUUID().split('-')[0];
+    const rawSecret = `ZROK-${crypto.randomUUID().split('-')[0].toUpperCase()}`;
+    const p1 = crypto.randomUUID().split('-')[0].toUpperCase();
+    const p2 = crypto.randomUUID().split('-')[0].toUpperCase();
+    const keyIdentifier = `ZROK-${p1}-${p2}`;
     const keyHash = await bcrypt.hash(rawSecret, 10);
     
     const license = await db.licenseKey.create({
@@ -81,7 +83,11 @@ export class LicenseService {
   static async pauseIndividual(licenseId: string, adminId: string) {
     return await db.$transaction(async (prismaTx) => {
         const license = await prismaTx.licenseKey.findUnique({ where: { id: licenseId } });
-        if (!license || !license.activatedAt || license.status === LicenseStatus.REVOKED || license.status === LicenseStatus.EXPIRED || license.status === LicenseStatus.INACTIVE || license.pausedIndividual) return;
+        if (!license) throw new Error('License not found');
+        if (license.status === LicenseStatus.REVOKED) throw new Error('License is revoked');
+        if (license.status === LicenseStatus.EXPIRED) throw new Error('License is expired');
+        if (license.status === LicenseStatus.INACTIVE) throw new Error('License is inactive');
+        if (!license.activatedAt || license.pausedIndividual) return;
         
         const now = new Date();
         const data: any = { pausedIndividual: true };

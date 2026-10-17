@@ -231,3 +231,124 @@ export class ResourceService {
         });
     }
 }
+
+const DEFAULT_APP_CONFIG = {
+  tabs: [
+    {
+      id: 'home',
+      name: 'Início',
+      icon: '🏠',
+      order: 0,
+      elements: [
+        { id: 'elem-1', name: 'Anti-Ban Protection', description: 'Advanced kernel telemetry shield active for Free Fire', icon: '🛡️', type: 'toggle', enabled: true, order: 0 },
+        { id: 'elem-2', name: 'Instant Patch Loader', description: 'Inject memory patches and bundles on startup', icon: '⚡', type: 'action', enabled: true, order: 1 }
+      ]
+    },
+    {
+      id: 'cleaner',
+      name: 'Limpeza',
+      icon: '🧹',
+      order: 1,
+      elements: [
+        { id: 'elem-3', name: 'Cache Cleaner', description: 'Purge temporary game assets and logs', icon: '🗑️', type: 'action', enabled: true, order: 0 }
+      ]
+    }
+  ],
+  hero: { imageUrl: '', title: 'ZROK Enterprise v2.0', subtitle: 'Free Fire Advanced Customization & Patch Center' },
+  theme: { background: '#0b0f19', cardBackground: '#131c31', textColor: '#f8fafc', secondaryText: '#94a3b8', buttonColor: '#3b82f6', accentColor: '#10b981', borderColor: '#1e293b' }
+};
+
+export class ConfigService {
+  static async getConfig(): Promise<any> {
+    const record = await db.appConfig.findUnique({ where: { id: 'default' } });
+    if (!record || !record.config) {
+      const defaultStructure = {
+        draft: DEFAULT_APP_CONFIG,
+        published: DEFAULT_APP_CONFIG,
+        publishedVersion: 1,
+        publishedAt: new Date().toISOString(),
+        devices: []
+      };
+      return defaultStructure;
+    }
+    try {
+      const parsed = JSON.parse(record.config);
+      if (!parsed.draft) {
+        return {
+          draft: parsed,
+          published: parsed,
+          publishedVersion: 1,
+          publishedAt: new Date().toISOString(),
+          devices: []
+        };
+      }
+      return parsed;
+    } catch {
+      return {
+        draft: DEFAULT_APP_CONFIG,
+        published: DEFAULT_APP_CONFIG,
+        publishedVersion: 1,
+        publishedAt: new Date().toISOString(),
+        devices: []
+      };
+    }
+  }
+
+  static async saveDraft(draftData: any): Promise<any> {
+    const current = await this.getConfig();
+    current.draft = draftData;
+    const configString = JSON.stringify(current);
+    const record = await db.appConfig.upsert({
+      where: { id: 'default' },
+      update: { config: configString },
+      create: { id: 'default', config: configString }
+    });
+    return JSON.parse(record.config);
+  }
+
+  static async publish(): Promise<any> {
+    const current = await this.getConfig();
+    current.published = JSON.parse(JSON.stringify(current.draft));
+    current.publishedVersion = (current.publishedVersion || 0) + 1;
+    current.publishedAt = new Date().toISOString();
+
+    const configString = JSON.stringify(current);
+    const record = await db.appConfig.upsert({
+      where: { id: 'default' },
+      update: { config: configString },
+      create: { id: 'default', config: configString }
+    });
+    return JSON.parse(record.config);
+  }
+
+  static async recordDeviceSync(deviceData: { deviceIdentifier: string; platform?: string; appVersion?: string; syncedVersion: number; syncStatus: string }): Promise<any> {
+    const current = await this.getConfig();
+    if (!current.devices) {
+      current.devices = [];
+    }
+    const idx = current.devices.findIndex((d: any) => d.deviceIdentifier === deviceData.deviceIdentifier);
+    const matchesCurrentPublished = deviceData.syncedVersion === (current.publishedVersion || 1);
+    const deviceEntry = {
+      deviceIdentifier: deviceData.deviceIdentifier,
+      platform: deviceData.platform || 'iOS',
+      appVersion: deviceData.appVersion || '1.1.1',
+      lastSyncedVersion: deviceData.syncedVersion,
+      clientReportedStatus: deviceData.syncStatus,
+      matchesCurrentPublishedVersion: matchesCurrentPublished,
+      lastSyncAt: new Date().toISOString()
+    };
+    if (idx >= 0) {
+      current.devices[idx] = deviceEntry;
+    } else {
+      current.devices.push(deviceEntry);
+    }
+
+    const configString = JSON.stringify(current);
+    await db.appConfig.upsert({
+      where: { id: 'default' },
+      update: { config: configString },
+      create: { id: 'default', config: configString }
+    });
+    return current;
+  }
+}
