@@ -7,10 +7,8 @@ interface HeaderProps {
 export default function Header({ currentTab }: HeaderProps) {
   const titles: Record<TabType, string> = {
     dashboard: 'System Dashboard & Overview',
-    licenses: 'License Keys Management',
-    categories: 'Feature Categories',
-    features: 'Application Features',
-    resources: 'Replacement Resources & Files',
+    patches: 'Zrok Patches & Features Management',
+    categories: 'Categories Management',
     editor: 'App Visual Frontend Editor',
     settings: 'System Configuration',
   };

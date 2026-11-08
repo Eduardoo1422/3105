@@ -87,10 +87,31 @@ export async function createFeature(data: {
   categoryId: string;
   iconName: string;
   enabled: boolean;
+  status?: string;
 }): Promise<Feature> {
   return apiRequest<Feature>('/admin/feature', {
     method: 'POST',
     body: JSON.stringify(data),
+  });
+}
+
+export async function updateFeature(id: string, data: {
+  name?: string;
+  description?: string;
+  categoryId?: string;
+  iconName?: string;
+  enabled?: boolean;
+  status?: string;
+}): Promise<Feature> {
+  return apiRequest<Feature>(`/admin/feature/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteFeature(id: string): Promise<void> {
+  return apiRequest<void>(`/admin/feature/${id}`, {
+    method: 'DELETE',
   });
 }
 

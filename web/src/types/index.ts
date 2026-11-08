@@ -59,6 +59,7 @@ export interface Feature {
   categoryId: string;
   iconName: string;
   enabled: boolean;
+  status?: string;
   createdAt: string;
   updatedAt: string;
   category?: Category;

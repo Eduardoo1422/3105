@@ -23,6 +23,8 @@ router.post('/admin/license', AdminLicenseController.create);
 router.post('/admin/category', AdminCategoryController.create);
 router.get('/admin/category', AdminCategoryController.list);
 router.post('/admin/feature', AdminFeatureController.create);
+router.put('/admin/feature/:id', AdminFeatureController.update);
+router.delete('/admin/feature/:id', AdminFeatureController.delete);
 router.post('/admin/resource', AdminResourceController.upload);
 router.get('/admin/resource', AdminResourceController.list);
 router.get('/admin/resource/:id', AdminResourceController.get);

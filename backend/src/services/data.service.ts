@@ -21,8 +21,21 @@ export class FeatureService {
     });
   }
 
-  static async create(data: { name: string, description: string, categoryId: string, iconName: string, enabled: boolean }) {
+  static async create(data: { name: string, description: string, categoryId: string, iconName: string, enabled: boolean, status?: string }) {
     return await db.feature.create({ data });
+  }
+
+  static async update(id: string, data: { name?: string, description?: string, categoryId?: string, iconName?: string, enabled?: boolean, status?: string }) {
+    return await db.feature.update({ where: { id }, data });
+  }
+
+  static async delete(id: string) {
+    const resources = await db.resource.findMany({ where: { featureId: id } });
+    for (const res of resources) {
+      await db.resourceVersion.deleteMany({ where: { resourceId: res.id } });
+      await db.resource.delete({ where: { id: res.id } });
+    }
+    return await db.feature.delete({ where: { id } });
   }
 }
 

@@ -8,7 +8,8 @@
     "start": "node dist/app.js",
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "test": "jest --detectOpenHandles --forceExit",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "reset-admin": "ts-node src/scripts/reset_admin_password.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.0.0",

@@ -85,6 +85,13 @@
 		3105S016 /* ZrokFeatureSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S015; };
 		3105S018 /* ZrokGameHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S017; };
 		3105S020 /* ZrokModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S019; };
+		3105S023 /* SwagFunctionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S022; };
+		3105S025 /* SwagBottomNavView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105S024; };
+			3105B1A326F1266E5 /* CompatibilityBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105Z96344821E545; };
+		3105B5246FB554D8E /* RemoteAppConfigSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105Z0BE1C11BE371; };
+		3105B072DD7EA48BE /* ZrokKeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105Z9AB784BBED79; };
+		3105B5623CCFD9CC7 /* ZrokPatchDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105Z81F9FC9E4D7D; };
+		3105B5E9A4FF1D18A /* ZrokPublishedTabsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105ZE3B0AE066B7C; };
 	/* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -184,6 +191,13 @@
 		3105S015 /* ZrokFeatureSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokFeatureSection.swift; sourceTree = "<group>"; };
 		3105S017 /* ZrokGameHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokGameHeader.swift; sourceTree = "<group>"; };
 		3105S019 /* ZrokModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokModels.swift; sourceTree = "<group>"; };
+		3105S022 /* SwagFunctionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwagFunctionsView.swift; sourceTree = "<group>"; };
+		3105S024 /* SwagBottomNavView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwagBottomNavView.swift; sourceTree = "<group>"; };
+			3105Z96344821E545 /* CompatibilityBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompatibilityBuilder.swift; sourceTree = "<group>"; };
+		3105Z0BE1C11BE371 /* RemoteAppConfigSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteAppConfigSyncService.swift; sourceTree = "<group>"; };
+		3105Z9AB784BBED79 /* ZrokKeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokKeychainStore.swift; sourceTree = "<group>"; };
+		3105Z81F9FC9E4D7D /* ZrokPatchDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokPatchDownloadManager.swift; sourceTree = "<group>"; };
+		3105ZE3B0AE066B7C /* ZrokPublishedTabsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokPublishedTabsView.swift; sourceTree = "<group>"; };
 	/* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -339,6 +353,12 @@
 		3105S021 /* Zrok */ = {
 			isa = PBXGroup;
 			children = (
+				3105Z96344821E545 /* CompatibilityBuilder.swift */,
+				3105Z0BE1C11BE371 /* RemoteAppConfigSyncService.swift */,
+				3105Z9AB784BBED79 /* ZrokKeychainStore.swift */,
+				3105Z81F9FC9E4D7D /* ZrokPatchDownloadManager.swift */,
+				3105ZE3B0AE066B7C /* ZrokPublishedTabsView.swift */,
+
 				3105S001 /* ActivationView.swift */,
 				3105S003 /* FeatureRepository.swift */,
 				3105S005 /* InfoView.swift */,
@@ -349,6 +369,8 @@
 				3105S015 /* ZrokFeatureSection.swift */,
 				3105S017 /* ZrokGameHeader.swift */,
 				3105S019 /* ZrokModels.swift */,
+				3105S022 /* SwagFunctionsView.swift */,
+				3105S024 /* SwagBottomNavView.swift */,
 			);
 			path = Zrok;
 			sourceTree = "<group>";
@@ -420,6 +442,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3105B1A326F1266E5, 3105B5246FB554D8E, 3105B072DD7EA48BE, 3105B5623CCFD9CC7, 3105B5E9A4FF1D18A,
 				3105A200, 3105A201, 3105A203, 3105A204,
 				3105A205, 3105A206, 3105A207, 3105A209,
 				3105A210, 3105A220, 3105A221, 3105A222, 3105A223,

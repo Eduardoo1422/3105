@@ -34,6 +34,7 @@ export const featureCreateSchema = z.object({
   categoryId: z.string().uuid(),
   iconName: z.string().min(1),
   enabled: z.boolean().default(true),
+  status: z.enum(['GREEN', 'YELLOW', 'RED']).default('GREEN'),
 });
 
 export const appConfigSchema = z.object({

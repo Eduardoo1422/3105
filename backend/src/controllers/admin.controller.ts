@@ -20,6 +20,7 @@ const parseMaxUploadSize = (): number => {
 };
 
 const upload = multer({ 
+    storage: multer.memoryStorage(),
     limits: { fileSize: parseMaxUploadSize() }
 }).single('file');
 
@@ -56,6 +57,22 @@ export const AdminFeatureController = {
     try {
       const validated = featureCreateSchema.parse(req.body);
       const result = await FeatureService.create(validated);
+      res.json(result);
+    } catch (e: any) {
+      res.status(400).json({ error: e.message });
+    }
+  },
+  update: async (req: Request, res: Response) => {
+    try {
+      const result = await FeatureService.update(req.params.id, req.body);
+      res.json(result);
+    } catch (e: any) {
+      res.status(400).json({ error: e.message });
+    }
+  },
+  delete: async (req: Request, res: Response) => {
+    try {
+      const result = await FeatureService.delete(req.params.id);
       res.json(result);
     } catch (e: any) {
       res.status(400).json({ error: e.message });

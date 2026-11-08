@@ -71,6 +71,7 @@ model Feature {
   categoryId  String
   iconName    String
   enabled     Boolean    @default(true)
+  status      String     @default("GREEN")
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   category    Category   @relation(fields: [categoryId], references: [id])
