@@ -85,7 +85,7 @@ struct ZrokPublishedTabsView: View {
             }
             initializeToggleStates()
         }
-        .onChange(of: syncService.remoteTabs) { newTabs in
+        .onReceive(syncService.$remoteTabs) { newTabs in
             if activeTabId.isEmpty, let first = newTabs.first, let id = first["id"] as? String {
                 activeTabId = id
             }
@@ -109,9 +109,9 @@ struct ZrokPublishedTabsView: View {
 
     @ViewBuilder
     private func elementView(id: String, resourceId: String, type: String, name: String, description: String, icon: String, defaultEnabled: Bool) -> some View {
-        let isEnabledBinding = Binding<Bool>(
+        let isEnabledBinding = Binding(
             get: { toggleStates[id] ?? defaultEnabled },
-            setValue: { newValue in toggleStates[id] = newValue }
+            set: { toggleStates[id] = $0 }
         )
 
         let statusText = actionStatus[id]
