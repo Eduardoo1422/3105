@@ -14,11 +14,11 @@ class ZrokFeatureManager: ObservableObject {
         self.repository = repository
         loadData()
         
-        // Listen to sync service updates to apply remote config fields
-        syncService.$remoteConfig
+        // Listen to sync service updates to track published version changes
+        syncService.$publishedVersion
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] config in
-                self?.applyRemoteConfiguration(config)
+            .sink { [weak self] version in
+                print("ZrokApp: Config version updated to \(version)")
             }
             .store(in: &cancellables)
     }
