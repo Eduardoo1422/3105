@@ -44,7 +44,7 @@ struct SwagBottomNavView: View {
         .padding(.vertical, 6)
         .background(
             Capsule()
-                .fill(Color(uiColor: .systemDarkGray).opacity(0.9))
+                .fill(Color(uiColor: .darkGray).opacity(0.9))
                 .background(.ultraThinMaterial)
                 .clipShape(Capsule())
                 .overlay(
