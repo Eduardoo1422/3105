@@ -18,7 +18,10 @@ struct ZrokHomeView: View {
                     SwagFunctionsView()
                 case 1:
                     NavigationStack {
-                        FileBrowserView()
+                        FileBrowserView(
+                            containerPath: (try? PatchWorkspaceService.documentsRootURL().path) ?? NSHomeDirectory(),
+                            title: "Files"
+                        )
                     }
                 case 2:
                     NavigationStack {
