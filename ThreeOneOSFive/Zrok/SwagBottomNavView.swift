@@ -5,10 +5,7 @@ struct SwagBottomNavView: View {
 
     let tabs = [
         ("Home", "house.fill"),
-        ("Files", "folder.fill"),
-        ("Patches", "cube.box.fill"),
-        ("Cleaner", "sparkles"),
-        ("Wallpapers", "photo.fill")
+        ("Patches", "cube.box.fill")
     ]
 
     var body: some View {
@@ -51,7 +48,7 @@ struct SwagBottomNavView: View {
                     Capsule().stroke(Color.white.opacity(0.15), lineWidth: 1)
                 )
         )
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 40)
         .padding(.bottom, 8)
     }
 }

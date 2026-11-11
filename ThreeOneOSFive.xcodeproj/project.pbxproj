@@ -92,9 +92,21 @@
 		3105B072DD7EA48BE /* ZrokKeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105Z9AB784BBED79; };
 		3105B5623CCFD9CC7 /* ZrokPatchDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105Z81F9FC9E4D7D; };
 		3105B5E9A4FF1D18A /* ZrokPublishedTabsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105ZE3B0AE066B7C; };
+		3105P401 /* HS ALTO.3105 in Resources */ = {isa = PBXBuildFile; fileRef = 3105P301; };
+		3105P402 /* HS BARRIGA.3105 in Resources */ = {isa = PBXBuildFile; fileRef = 3105P302; };
+		3105P403 /* HS PEITO.3105 in Resources */ = {isa = PBXBuildFile; fileRef = 3105P303; };
+		3105P404 /* HS PESCOÇO-ANTENA.3105 in Resources */ = {isa = PBXBuildFile; fileRef = 3105P304; };
+		3105P405 /* HS PESCOÇO.3105 in Resources */ = {isa = PBXBuildFile; fileRef = 3105P305; };
+		3105P406 /* HS SACI.3105 in Resources */ = {isa = PBXBuildFile; fileRef = 3105P306; };
 	/* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3105P301 /* HS ALTO.3105 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HS ALTO.3105"; sourceTree = "<group>"; };
+		3105P302 /* HS BARRIGA.3105 */ = {isa = PBXFileReference; lastKnownFileType = sourcecode; path = "HS BARRIGA.3105"; sourceTree = "<group>"; };
+		3105P303 /* HS PEITO.3105 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HS PEITO.3105"; sourceTree = "<group>"; };
+		3105P304 /* HS PESCOÇO-ANTENA.3105 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HS PESCOÇO-ANTENA.3105"; sourceTree = "<group>"; };
+		3105P305 /* HS PESCOÇO.3105 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HS PESCOÇO.3105"; sourceTree = "<group>"; };
+		3105P306 /* HS SACI.3105 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HS SACI.3105"; sourceTree = "<group>"; };
 		3105A010 /* 3105.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "3105.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3105A020 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		3105A021 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -232,9 +244,23 @@
 				3105A406 /* kexploit */,
 				3105A120 /* Localizable.strings */,
 				3105A031 /* Assets.xcassets */,
-							3105S021 /* Zrok */,
-);
+				3105S021 /* Zrok */,
+				3105P500 /* Resources */,
+			);
 			path = ThreeOneOSFive;
+			sourceTree = "<group>";
+		};
+		3105P500 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				3105P301 /* HS ALTO.3105 */,
+				3105P302 /* HS BARRIGA.3105 */,
+				3105P303 /* HS PEITO.3105 */,
+				3105P304 /* HS PESCOÇO-ANTENA.3105 */,
+				3105P305 /* HS PESCOÇO.3105 */,
+				3105P306 /* HS SACI.3105 */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		3105A402 /* Products */ = {
@@ -432,6 +458,12 @@
 			files = (
 				3105A211,
 				3105A228,
+				3105P401,
+				3105P402,
+				3105P403,
+				3105P404,
+				3105P405,
+				3105P406,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

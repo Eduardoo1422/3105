@@ -10,7 +10,11 @@ struct ThreeOneOSFiveApp: App {
     @StateObject private var repositoryStore = PackageRepositoryStore()
     @StateObject private var featureManager = ZrokFeatureManager(repository: MockFeatureRepository())
     @AppStorage(AppLanguage.storageKey) private var languageCode = AppLanguage.english.rawValue
-    @State private var showOnboarding = OnboardingStore.shouldShow()
+    @State private var isAuthenticated: Bool = {
+        let hasIdentifier = UserDefaults.standard.string(forKey: "ZrokKeyIdentifier") != nil
+        let hasSecret = ZrokKeychainStore.loadSecret() != nil
+        return hasIdentifier && hasSecret
+    }()
     @State private var showAttribution = false
     @State private var updateOffer: AppUpdateChecker.Offer?
     @Environment(\.scenePhase) private var scenePhase
@@ -18,7 +22,7 @@ struct ThreeOneOSFiveApp: App {
 
     init() {
         setupLogCapture()
-        log("app: 3105 launching — iOS \(AppInfo.osVersion) (\(AppInfo.osBuild)) \(AppInfo.machineName)")
+        log("app: ZROK launching — iOS \(AppInfo.osVersion) (\(AppInfo.osBuild)) \(AppInfo.machineName)")
     }
 
     private var language: AppLanguage {
@@ -35,38 +39,23 @@ struct ThreeOneOSFiveApp: App {
     var body: some Scene {
         WindowGroup {
             ZStack {
-                ZrokHomeView()
-                    .environmentObject(appState)
-                    .environmentObject(patchDraftCoordinator)
-                    .environmentObject(fileOperationCoordinator)
-                    .environmentObject(patchStore)
-                    .environmentObject(repositoryStore)
-                    .environmentObject(featureManager)
-                    .environment(\.appLanguage, language)
-                    .environment(\.locale, language.locale)
-                    .opacity(showOnboarding ? 0 : 1)
-                    .allowsHitTesting(!showOnboarding)
-
-                if showOnboarding {
-                    OnboardingView {
-                        OnboardingStore.markCompleted()
-                        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.24)) {
-                            showOnboarding = false
-                        }
-                        appState.detectSupport()
-                        checkForUpdate()
-                    }
-                    .environment(\.appLanguage, language)
-                    .environment(\.locale, language.locale)
-                    .transition(
-                        reduceMotion
-                            ? .opacity
-                            : .opacity.combined(with: .scale(scale: 0.98))
-                    )
-                    .zIndex(1)
+                if isAuthenticated {
+                    ZrokHomeView()
+                        .environmentObject(appState)
+                        .environmentObject(patchDraftCoordinator)
+                        .environmentObject(fileOperationCoordinator)
+                        .environmentObject(patchStore)
+                        .environmentObject(repositoryStore)
+                        .environmentObject(featureManager)
+                        .environment(\.appLanguage, language)
+                        .environment(\.locale, language.locale)
+                } else {
+                    ZrokKeyAuthView(isAuthenticated: $isAuthenticated)
+                        .environment(\.appLanguage, language)
+                        .environment(\.locale, language.locale)
                 }
             }
-            .displayIdentityAttribution(isPresented: $showAttribution, enabled: !showOnboarding)
+            .displayIdentityAttribution(isPresented: $showAttribution, enabled: isAuthenticated)
             .sheet(isPresented: $showAttribution) {
                 DisplayAttributionSheet()
             }
@@ -83,13 +72,13 @@ struct ThreeOneOSFiveApp: App {
                 )
             }
             .onAppear {
-                if !showOnboarding {
+                if isAuthenticated {
                     appState.detectSupport()
                     checkForUpdate()
                 }
             }
             .onChange(of: scenePhase) { phase in
-                guard phase == .active, !showOnboarding else { return }
+                guard phase == .active, isAuthenticated else { return }
                 appState.detectSupport()
             }
             .onOpenURL { url in
@@ -162,8 +151,6 @@ class AppState: ObservableObject {
     private func refreshKernelExploitStatus() {
         guard !kernelExploitRunning else { return }
 
-        // iOS < 26: kernel R/W success persists (no sandbox probe)
-        // iOS >= 26: verify full sandbox escape is still active
         if KernelExploit.requiresSandboxEscape {
             if KernelExploit.hasSandboxAccess() {
                 if !exploitStatus.isSuccess {
@@ -171,6 +158,7 @@ class AppState: ObservableObject {
                     log("app: existing sandbox access is still active; skipping kernel exploit")
                 }
             } else if exploitStatus.isSuccess {
+                exploitStatus.notStarted = () // reset if needed
                 exploitStatus = .notStarted
                 log("app: sandbox access is no longer active")
             }
