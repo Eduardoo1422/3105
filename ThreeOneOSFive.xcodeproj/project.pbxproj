@@ -92,6 +92,7 @@
 		3105B072DD7EA48BE /* ZrokKeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105Z9AB784BBED79; };
 		3105B5623CCFD9CC7 /* ZrokPatchDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105Z81F9FC9E4D7D; };
 		3105B5E9A4FF1D18A /* ZrokPublishedTabsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105ZE3B0AE066B7C; };
+		3105ZKEY02 /* ZrokKeyAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105ZKEY01; };
 		3105P401 /* HS ALTO.3105 in Resources */ = {isa = PBXBuildFile; fileRef = 3105P301; };
 		3105P402 /* HS BARRIGA.3105 in Resources */ = {isa = PBXBuildFile; fileRef = 3105P302; };
 		3105P403 /* HS PEITO.3105 in Resources */ = {isa = PBXBuildFile; fileRef = 3105P303; };
@@ -210,6 +211,7 @@
 		3105Z9AB784BBED79 /* ZrokKeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokKeychainStore.swift; sourceTree = "<group>"; };
 		3105Z81F9FC9E4D7D /* ZrokPatchDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokPatchDownloadManager.swift; sourceTree = "<group>"; };
 		3105ZE3B0AE066B7C /* ZrokPublishedTabsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokPublishedTabsView.swift; sourceTree = "<group>"; };
+		3105ZKEY01 /* ZrokKeyAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZrokKeyAuthView.swift; sourceTree = "<group>"; };
 	/* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -384,6 +386,7 @@
 				3105Z9AB784BBED79 /* ZrokKeychainStore.swift */,
 				3105Z81F9FC9E4D7D /* ZrokPatchDownloadManager.swift */,
 				3105ZE3B0AE066B7C /* ZrokPublishedTabsView.swift */,
+				3105ZKEY01 /* ZrokKeyAuthView.swift */,
 
 				3105S001 /* ActivationView.swift */,
 				3105S003 /* FeatureRepository.swift */,
@@ -475,7 +478,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3105S023, 3105S025,
-				3105B1A326F1266E5, 3105B5246FB554D8E, 3105B072DD7EA48BE, 3105B5623CCFD9CC7, 3105B5E9A4FF1D18A,
+				3105B1A326F1266E5, 3105B5246FB554D8E, 3105B072DD7EA48BE, 3105B5623CCFD9CC7, 3105B5E9A4FF1D18A, 3105ZKEY02,
 				3105A200, 3105A201, 3105A203, 3105A204,
 				3105A205, 3105A206, 3105A207, 3105A209,
 				3105A210, 3105A220, 3105A221, 3105A222, 3105A223,

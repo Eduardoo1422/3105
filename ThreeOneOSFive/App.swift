@@ -158,7 +158,6 @@ class AppState: ObservableObject {
                     log("app: existing sandbox access is still active; skipping kernel exploit")
                 }
             } else if exploitStatus.isSuccess {
-                exploitStatus.notStarted = () // reset if needed
                 exploitStatus = .notStarted
                 log("app: sandbox access is no longer active")
             }
