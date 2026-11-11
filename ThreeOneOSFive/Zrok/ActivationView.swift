@@ -192,7 +192,7 @@ struct ZrokHomeDashboardView: View {
                 .foregroundColor(highlight ? .orange : .gray)
             Spacer()
             Text(build)
-                .font(.system(size: 13, weight: .monospaced))
+                .font(.system(size: 13, design: .monospaced))
                 .foregroundColor(highlight ? .orange : .gray)
         }
     }
