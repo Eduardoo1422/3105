@@ -2,19 +2,53 @@ import { db } from '../db';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { LicenseStatus } from '@prisma/client';
+import { config } from '../config';
 
 export class LicenseService {
+  private static computeFingerprint(key: string): string {
+    const hmacSecret = config.hmacSecret;
+    if (!hmacSecret) {
+      throw new Error('ZROK_HMAC_SECRET configuration is missing or insecure');
+    }
+    return crypto.createHmac('sha256', hmacSecret).update(key).digest('hex');
+  }
+
+  private static generateSecureKey(): string {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 31 chars
+    const gen = (length: number) => {
+      let result = '';
+      while (result.length < length) {
+        const buf = crypto.randomBytes(1);
+        const val = buf[0];
+        if (val < 248) { // 248 is largest multiple of 31 under 256 (31 * 8 = 248)
+          result += chars[val % chars.length];
+        }
+      }
+      return result;
+    };
+    return `ZROK-${gen(4)}-${gen(5)}`;
+  }
+
   static async createLicense(durationDays: number, maxDevices: number, notes?: string, adminId?: string) {
-    const rawSecret = `ZROK-${crypto.randomUUID().split('-')[0].toUpperCase()}`;
-    const p1 = crypto.randomUUID().split('-')[0].toUpperCase();
-    const p2 = crypto.randomUUID().split('-')[0].toUpperCase();
-    const keyIdentifier = `ZROK-${p1}-${p2}`;
-    const keyHash = await bcrypt.hash(rawSecret, 10);
+    let key = this.generateSecureKey();
+    let fingerprint = this.computeFingerprint(key);
+    
+    // Ensure uniqueness
+    let exists = await db.licenseKey.findUnique({ where: { keyIdentifier: fingerprint } });
+    while (exists) {
+      key = this.generateSecureKey();
+      fingerprint = this.computeFingerprint(key);
+      exists = await db.licenseKey.findUnique({ where: { keyIdentifier: fingerprint } });
+    }
+
+    const keyHash = await bcrypt.hash(key, 10);
+    const maskedKey = `ZROK-${key.split('-')[1]}-*****`;
     
     const license = await db.licenseKey.create({
       data: {
-        keyIdentifier,
+        keyIdentifier: fingerprint,
         keyHash,
+        maskedKey,
         durationDays,
         status: LicenseStatus.ACTIVE,
         expiresAt: null,
@@ -26,34 +60,38 @@ export class LicenseService {
     });
 
     await db.auditLog.create({ data: { action: 'LICENSE_CREATED', targetId: license.id, actorId: adminId } });
-    return { keyIdentifier: license.keyIdentifier, rawSecret };
+    return { keyIdentifier: fingerprint, maskedKey, rawSecret: key, key };
   }
 
-  static async validateLicense(keyIdentifier: string, rawSecret: string, deviceIdentifier: string) {
+  static async validateLicense(key: string, deviceIdentifier: string, ip?: string) {
     return await db.$transaction(async (prismaTx) => {
-      const license = await prismaTx.licenseKey.findUnique({ where: { keyIdentifier } });
+      const fingerprint = this.computeFingerprint(key);
+      let license = await prismaTx.licenseKey.findUnique({ where: { keyIdentifier: fingerprint } });
+      
+      // Fallback for legacy keys if any exist in test/legacy environments
+      if (!license) {
+        license = await prismaTx.licenseKey.findUnique({ where: { keyIdentifier: key } });
+      }
+
       if (!license) throw new Error('Invalid license');
       if (license.status === LicenseStatus.REVOKED) throw new Error('License revoked');
       if (license.status === LicenseStatus.INACTIVE) throw new Error('License inactive');
       if (license.status === LicenseStatus.PAUSED) throw new Error('License paused');
       if (license.status === LicenseStatus.EXPIRED) throw new Error('License expired');
       
-      if (!(await bcrypt.compare(rawSecret, license.keyHash))) throw new Error('Invalid license');
+      if (!(await bcrypt.compare(key, license.keyHash))) throw new Error('Invalid license');
 
       // Deferred Activation
       if (!license.activatedAt) {
         const now = new Date();
         const expiresAt = new Date(now.getTime() + (license.durationDays * 24 * 60 * 60 * 1000));
         
-        const updated = await prismaTx.licenseKey.updateMany({
-          where: { id: license.id, activatedAt: null },
+        await prismaTx.licenseKey.update({
+          where: { id: license.id },
           data: { activatedAt: now, expiresAt }
         });
-        
-        if (updated.count === 0) {
-            const fresh = await prismaTx.licenseKey.findUnique({ where: { id: license.id } });
-            if (!fresh || !fresh.expiresAt || new Date() > fresh.expiresAt) throw new Error('License expired');
-        }
+        license.activatedAt = now;
+        license.expiresAt = expiresAt;
         await prismaTx.auditLog.create({ data: { action: 'LICENSE_ACTIVATED', targetId: license.id } });
       } else if (license.expiresAt && new Date() > license.expiresAt) {
           await prismaTx.licenseKey.update({ where: { id: license.id }, data: { status: LicenseStatus.EXPIRED } });
@@ -69,14 +107,85 @@ export class LicenseService {
       if (!device) {
         if (deviceCount >= license.maxDevices) throw new Error('Device limit reached');
         device = await prismaTx.device.create({
-          data: { deviceIdentifier, licenseKeyId: license.id }
+          data: { deviceIdentifier, licenseKeyId: license.id, lastIp: ip }
         });
         await prismaTx.auditLog.create({ data: { action: 'DEVICE_LINKED', targetId: license.id, details: device.id } });
+      } else {
+        await prismaTx.device.update({ where: { id: device.id }, data: { lastSeenAt: new Date(), lastIp: ip } });
+      }
+
+      let usernameToken: string | undefined = undefined;
+      if (!license.username) {
+        usernameToken = crypto.randomBytes(32).toString('hex');
+        const tokenHash = crypto.createHash('sha256').update(usernameToken).digest('hex');
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes expiry
+        await prismaTx.usernameToken.create({
+          data: {
+            tokenHash,
+            licenseKeyId: license.id,
+            deviceIdentifier,
+            expiresAt
+          }
+        });
       }
       
-      await prismaTx.device.update({ where: { id: device.id }, data: { lastSeenAt: new Date() } });
+      return { 
+        licenseId: license.id, 
+        status: LicenseStatus.ACTIVE, 
+        expiresAt: license.expiresAt,
+        username: license.username,
+        needsUsername: !license.username,
+        usernameToken
+      };
+    });
+  }
 
-      return { licenseId: license.id, deviceId: device.id, status: LicenseStatus.ACTIVE, expiresAt: license.expiresAt };
+  static async registerUsername(licenseId: string, username: string, deviceIdentifier: string, usernameToken?: string) {
+    if (!username || username.length < 3 || username.length > 20) throw new Error('Invalid username length');
+    if (!usernameToken) throw new Error('Missing username registration token');
+
+    const tokenHash = crypto.createHash('sha256').update(usernameToken).digest('hex');
+
+    return await db.$transaction(async (prismaTx) => {
+      const tokenRecord = await prismaTx.usernameToken.findUnique({ where: { tokenHash } });
+      if (!tokenRecord) throw new Error('Invalid or expired username registration token');
+      if (tokenRecord.used) throw new Error('Username registration token already used');
+      if (tokenRecord.expiresAt < new Date()) throw new Error('Username registration token expired');
+      if (tokenRecord.licenseKeyId !== licenseId || tokenRecord.deviceIdentifier !== deviceIdentifier) {
+        throw new Error('Token does not match license or device');
+      }
+
+      // Atomically invalidate token (single-use)
+      const updateRes = await prismaTx.usernameToken.updateMany({
+        where: { id: tokenRecord.id, used: false },
+        data: { used: true }
+      });
+      if (updateRes.count === 0) throw new Error('Invalid or expired username registration token');
+
+      const license = await prismaTx.licenseKey.findUnique({ 
+        where: { id: licenseId },
+        include: { devices: true }
+      });
+      
+      if (!license) throw new Error('License not found');
+      if (license.username) throw new Error('Username already registered');
+      
+      const isDeviceLinked = license.devices.some(d => d.deviceIdentifier === deviceIdentifier && d.active);
+      if (!isDeviceLinked) throw new Error('Device not authorized for this license');
+
+      const existing = await prismaTx.licenseKey.findUnique({ where: { username } });
+      if (existing) throw new Error('Username already taken');
+
+      await prismaTx.licenseKey.update({
+        where: { id: licenseId },
+        data: { username }
+      });
+
+      await prismaTx.auditLog.create({ 
+        data: { action: 'USERNAME_REGISTERED', targetId: licenseId, details: username } 
+      });
+
+      return { success: true, username };
     });
   }
 

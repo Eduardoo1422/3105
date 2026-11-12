@@ -6,6 +6,7 @@ struct ZrokKeyAuthView: View {
     @State private var keyInput: String = ""
     @State private var isLoading: Bool = false
     @State private var errorMessage: String? = nil
+    @State private var showRegisterUsername: Bool = false
 
     var body: some View {
         ZStack {
@@ -24,9 +25,11 @@ struct ZrokKeyAuthView: View {
                                 RoundedRectangle(cornerRadius: 24)
                                     .stroke(Color.orange.opacity(0.6), lineWidth: 1.5)
                             )
-                        Image(systemName: "key.fill")
-                            .font(.system(size: 38))
-                            .foregroundColor(.orange)
+                        Image("foto-logo")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 76, height: 76)
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
                     }
 
                     VStack(spacing: 8) {
@@ -103,6 +106,12 @@ struct ZrokKeyAuthView: View {
                 .frame(maxWidth: .infinity)
             }
             .scrollDismissesKeyboard(.interactively)
+            .sheet(isPresented: $showRegisterUsername) {
+                ZrokRegisterUsernameView(
+                    licenseId: UserDefaults.standard.string(forKey: "ZrokLicenseId") ?? "",
+                    isAuthenticated: $isAuthenticated
+                )
+            }
         }
     }
 
@@ -183,12 +192,21 @@ struct ZrokKeyAuthView: View {
                     // Parse JSON response to verify success structure (strictly require ACTIVE status)
                     if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                        json["status"] as? String == "ACTIVE" {
+                        let needsUsername = json["needsUsername"] as? Bool ?? false
+                        if needsUsername, let token = json["usernameToken"] as? String, let licenseId = json["licenseId"] as? String {
+                            UserDefaults.standard.set(token, forKey: "ZrokUsernameToken")
+                            UserDefaults.standard.set(licenseId, forKey: "ZrokLicenseId")
+                        }
                         // Persist session ONLY after confirmed valid response
                         let saved = ZrokPatchDownloadManager.saveActivationSession(keyIdentifier: keyIdentifier, rawSecret: rawSecret)
                         await MainActor.run {
                             isLoading = false
                             if saved {
-                                isAuthenticated = true
+                                if needsUsername {
+                                    showRegisterUsername = true
+                                } else {
+                                    isAuthenticated = true
+                                }
                             } else {
                                 errorMessage = "Falha ao salvar credenciais no Keychain seguro."
                             }

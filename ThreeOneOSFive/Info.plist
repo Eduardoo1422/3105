@@ -101,6 +101,6 @@
     <key>MinimumOSVersion</key>
     <string>16.0</string>
     <key>ZrokAPIUrl</key>
-    <string></string>
+    <string>https://zrok-api.onrender.com/api/v1</string>
 </dict>
 </plist>

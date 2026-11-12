@@ -5,6 +5,7 @@
 process.env.DATABASE_URL =
   'postgresql://user:password@localhost:5432/zrokdb?schema=public';
 process.env.JWT_SECRET = 'test-jwt-secret-key-with-at-least-32-chars';
+process.env.ZROK_HMAC_SECRET = 'test-hmac-secret-key-with-at-least-32-chars';
 process.env.STORAGE_PATH = '/tmp/opencode/zrok-test-storage';
 process.env.MAX_UPLOAD_SIZE = '10485760'; // 10MB
 process.env.API_PORT = '3000';

@@ -21,11 +21,22 @@ export const AuthController = {
 export const LicenseController = {
   validate: async (req: Request, res: Response) => {
     try {
-      const { keyIdentifier, rawSecret, deviceIdentifier } = req.body;
-      const result = await LicenseService.validateLicense(keyIdentifier, rawSecret, deviceIdentifier);
+      const { key, deviceIdentifier } = req.body;
+      const ip = req.ip || (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress;
+      const result = await LicenseService.validateLicense(key, deviceIdentifier, ip);
       res.json(result);
     } catch (e: any) {
       res.status(401).json({ error: e.message });
+    }
+  },
+
+  registerUsername: async (req: Request, res: Response) => {
+    try {
+      const { licenseId, username, deviceIdentifier, usernameToken } = req.body;
+      const result = await LicenseService.registerUsername(licenseId, username, deviceIdentifier, usernameToken);
+      res.json(result);
+    } catch (e: any) {
+      res.status(400).json({ error: e.message });
     }
   }
 };
@@ -44,13 +55,14 @@ export const FeatureController = {
 export const ResourceClientController = {
   download: async (req: Request, res: Response) => {
     try {
-      const { keyIdentifier, rawSecret, deviceIdentifier } = req.body;
-      if (!keyIdentifier || !rawSecret || !deviceIdentifier) {
+      const { key, deviceIdentifier } = req.body;
+      if (!key || !deviceIdentifier) {
         return res.status(401).json({ error: 'License validation credentials required' });
       }
 
       // Validate active license and device association
-      await LicenseService.validateLicense(keyIdentifier, rawSecret, deviceIdentifier);
+      const ip = req.ip || (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress;
+      await LicenseService.validateLicense(key, deviceIdentifier, ip);
 
       const resource = await db.resource.findUnique({
         where: { id: req.params.id },

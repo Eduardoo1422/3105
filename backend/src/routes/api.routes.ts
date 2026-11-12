@@ -3,6 +3,7 @@ import { AuthController, LicenseController, FeatureController, ResourceClientCon
 import { AdminLicenseController, AdminCategoryController, AdminFeatureController, AdminResourceController, ResourceDownloadController, AdminConfigController } from '../controllers/admin.controller';
 import { authMiddleware } from '../middleware/auth';
 import { adminMiddleware } from '../middleware/admin';
+import { validateRateLimiter } from '../middleware/rateLimit';
 
 const router = Router();
 
@@ -10,7 +11,8 @@ const router = Router();
 router.post('/auth/login', AuthController.login);
 
 // Public / Protected / Client
-router.post('/license/validate', LicenseController.validate);
+router.post('/license/validate', validateRateLimiter, LicenseController.validate);
+router.post('/license/register-username', validateRateLimiter, LicenseController.registerUsername);
 router.get('/bootstrap', FeatureController.bootstrap);
 router.get('/config/published', AdminConfigController.getPublished);
 router.post('/device/sync-status', AdminConfigController.syncStatus);

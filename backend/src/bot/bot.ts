@@ -22,215 +22,147 @@ export const initBot = () => {
 
   const getAdminId = (ctx: any) => ctx.from?.id.toString() || 'unknown';
 
-  const controlMenu = Markup.inlineKeyboard([
-    [Markup.button.callback('🔑 Licenses', 'menu_licenses'), Markup.button.callback('📦 Resources', 'menu_resources')],
-    [Markup.button.callback('📱 Devices', 'menu_devices'), Markup.button.callback('📊 Analytics', 'menu_analytics')],
-    [Markup.button.callback('📜 Activity', 'menu_activity'), Markup.button.callback('⚙️ System', 'menu_system')]
+  const mainMenu = () => Markup.inlineKeyboard([
+    [Markup.button.callback('🔑 Generate Keys', 'menu_gen')],
+    [Markup.button.callback('👥 Users', 'menu_users'), Markup.button.callback('📊 Analytics', 'menu_stats')],
+    [Markup.button.callback('📜 Activity', 'menu_logs')]
   ]);
 
   bot.command('start', adminMiddleware, (ctx) => {
-    ctx.reply(
-      `ZROK CONTROL\n\nSystem status\n● Operational\n\nAPI       ● Online\nDatabase  ● Online\nBot       ● Online`,
-      controlMenu
-    );
+    ctx.reply(`ZROK CONTROL\n\nSystem Operational\nSelect an option:`, mainMenu());
   });
 
-  bot.command('status', adminMiddleware, (ctx) => {
-    ctx.reply(
-      `ZROK SYSTEM HEALTH\n\nAPI              ● OPERATIONAL\nDATABASE         ● OPERATIONAL\nTELEGRAM BOT     ● OPERATIONAL\nRESOURCES        ● OPERATIONAL\nAUTHENTICATION   ● OPERATIONAL`,
-      controlMenu
-    );
-  });
-
+  // --- HOME ---
   bot.action('menu_home', adminMiddleware, (ctx: any) => {
-    ctx.editMessageText(
-      `ZROK CONTROL\n\nSystem status\n● Operational\n\nAPI       ● Online\nDatabase  ● Online\nBot       ● Online`,
-      controlMenu
-    );
+    ctx.editMessageText(`ZROK CONTROL\n\nSystem Operational\nSelect an option:`, mainMenu());
   });
 
-  bot.action('menu_licenses', adminMiddleware, (ctx: any) => {
-    ctx.editMessageText(
-      `🔑 ZROK LICENSES MANAGEMENT\n\nCommands:\n/key_create <days> [maxDevices]\n/key_list\n/key_info <keyIdentifier>\n/key_pause <keyIdentifier>\n/key_resume <keyIdentifier>\n/key_revoke <keyIdentifier>\n/keys_pause_all\n/keys_resume_all`,
-      Markup.inlineKeyboard([
-        [Markup.button.callback('📋 List Keys', 'action_key_list'), Markup.button.callback('⏸️ Pause All', 'action_pause_all')],
-        [Markup.button.callback('◀️ Back to Menu', 'menu_home')]
-      ])
-    );
+  // --- GENERATE KEYS ---
+  bot.action('menu_gen', adminMiddleware, (ctx: any) => {
+    ctx.editMessageText(`🔑 SELECT DURATION\nChoose the validity period for the new key:`, Markup.inlineKeyboard([
+      [Markup.button.callback('3 Hours', 'gen_3h'), Markup.button.callback('6 Hours', 'gen_6h')],
+      [Markup.button.callback('12 Hours', 'gen_12h'), Markup.button.callback('1 Day', 'gen_1d')],
+      [Markup.button.callback('3 Days', 'gen_3d'), Markup.button.callback('7 Days', 'gen_7d')],
+      [Markup.button.callback('15 Days', 'gen_15d'), Markup.button.callback('30 Days', 'gen_30d')],
+      [Markup.button.callback('◀️ Back', 'menu_home')]
+    ]));
   });
 
-  bot.action('action_key_list', adminMiddleware, async (ctx: any) => {
-    const licenses = await db.licenseKey.findMany({ take: 10, orderBy: { createdAt: 'desc' } });
-    let message = '🔑 Recent Licenses:\n\n';
-    for (const l of licenses) {
-      message += `• ${l.keyIdentifier} [${l.status}]\n`;
+  const durations: Record<string, { days: number, label: string }> = {
+    '3h': { days: 0.125, label: '3 Hours' },
+    '6h': { days: 0.25, label: '6 Hours' },
+    '12h': { days: 0.5, label: '12 Hours' },
+    '1d': { days: 1, label: '1 Day' },
+    '3d': { days: 3, label: '3 Days' },
+    '7d': { days: 7, label: '7 Days' },
+    '15d': { days: 15, label: '15 Days' },
+    '30d': { days: 30, label: '30 Days' }
+  };
+
+  bot.action(/^gen_(.+)$/, adminMiddleware, async (ctx: any) => {
+    const type = ctx.match[1];
+    const dur = durations[type];
+    if (!dur) return;
+
+    try {
+      const { key } = await LicenseService.createLicense(dur.days, 1, `Created via Bot (${dur.label})`, getAdminId(ctx));
+      const expiresText = dur.days < 1 ? `${dur.label} after first use` : `${dur.days} days after first use`;
+      
+      ctx.editMessageText(
+        `✅ KEY GENERATED\n\nKey: \`${key}\` (tap to copy)\nDuration: ${dur.label}\nExpires: ${expiresText}\nStatus: ACTIVE`,
+        { parse_mode: 'MarkdownV2', ...Markup.inlineKeyboard([[Markup.button.callback('◀️ Back', 'menu_gen'), Markup.button.callback('🏠 Home', 'menu_home')]]) }
+      );
+    } catch (e: any) {
+      ctx.reply(`Error: ${e.message}`);
     }
-    await ctx.editMessageText(message, Markup.inlineKeyboard([[Markup.button.callback('◀️ Back', 'menu_licenses')]]));
   });
 
-  bot.action('action_pause_all', adminMiddleware, async (ctx: any) => {
-    await ctx.editMessageText(
-      `⚠️ CONFIRM ACTION\n\nYou are about to pause all active licenses.\nTheir remaining validity will be frozen until resumed.\n\nContinue?`,
-      Markup.inlineKeyboard([
-        [Markup.button.callback('Confirm', 'confirm_pause_all'), Markup.button.callback('Cancel', 'menu_licenses')]
-      ])
-    );
+  // --- USERS ---
+  bot.action('menu_users', adminMiddleware, async (ctx: any) => {
+    const licenses = await db.licenseKey.findMany({ take: 20, orderBy: { createdAt: 'desc' } });
+    if (licenses.length === 0) {
+      return ctx.editMessageText('No users found.', Markup.inlineKeyboard([[Markup.button.callback('◀️ Back', 'menu_home')]]));
+    }
+
+    const buttons = licenses.map(l => [Markup.button.callback(`${l.username || 'Unregistered'} (${l.status})`, `user_view_${l.id}`)]);
+    buttons.push([Markup.button.callback('◀️ Back', 'menu_home')]);
+    
+    ctx.editMessageText(`👥 USERS LIST\nSelect a user to view details:`, Markup.inlineKeyboard(buttons));
   });
 
-  bot.action('confirm_pause_all', adminMiddleware, async (ctx: any) => {
-    await LicenseService.pauseAll(getAdminId(ctx));
-    await ctx.editMessageText('✓ All active licenses have been paused.', Markup.inlineKeyboard([[Markup.button.callback('◀️ Back', 'menu_licenses')]]));
+  bot.action(/^user_view_(.+)$/, adminMiddleware, async (ctx: any) => {
+    const id = ctx.match[1];
+    const lic = await db.licenseKey.findUnique({ where: { id }, include: { devices: true } });
+    if (!lic) return ctx.answerCbQuery('User not found.');
+
+    const lastDevice = lic.devices.sort((a, b) => b.lastSeenAt.getTime() - a.lastSeenAt.getTime())[0];
+    const maskedKey = lic.maskedKey || 'ZROK-****-*****';
+    
+    let msg = `👤 USER DETAILS\n\n`;
+    msg += `Username: ${lic.username || 'Not registered'}\n`;
+    msg += `Key: \`${maskedKey}\`\n`;
+    msg += `Status: ${lic.status}\n`;
+    msg += `Created: ${lic.createdAt.toLocaleDateString()}\n`;
+    msg += `Expires: ${lic.expiresAt?.toLocaleDateString() || 'Not activated'}\n`;
+    msg += `Last IP: ${lastDevice?.lastIp || 'N/A'}\n`;
+    msg += `Device: ${lastDevice?.deviceIdentifier || 'N/A'}`;
+
+    const actions = [];
+    if (lic.status === 'ACTIVE') actions.push([Markup.button.callback('⏸️ Suspend', `user_suspend_${lic.id}`)]);
+    if (lic.status === 'PAUSED') actions.push([Markup.button.callback('▶️ Reactivate', `user_resume_${lic.id}`)]);
+    if (lic.status !== 'REVOKED') actions.push([Markup.button.callback('🚫 Revoke', `user_revoke_ask_${lic.id}`)]);
+    
+    actions.push([Markup.button.callback('◀️ Back to List', 'menu_users')]);
+
+    ctx.editMessageText(msg, { parse_mode: 'Markdown', ...Markup.inlineKeyboard(actions) });
   });
 
-  bot.action('menu_resources', adminMiddleware, (ctx: any) => {
-    ctx.editMessageText(
-      `📦 ZROK RESOURCES\n\nResource server status: ● OPERATIONAL\nManaged via ZROK Control Panel.`,
-      Markup.inlineKeyboard([[Markup.button.callback('◀️ Back to Menu', 'menu_home')]])
-    );
+  bot.action(/^user_suspend_(.+)$/, adminMiddleware, async (ctx: any) => {
+    await LicenseService.pauseIndividual(ctx.match[1], getAdminId(ctx));
+    ctx.answerCbQuery('License suspended.');
+    ctx.editMessageText('✓ License suspended.', Markup.inlineKeyboard([[Markup.button.callback('◀️ Back', `user_view_${ctx.match[1]}`)]]));
   });
 
-  bot.action('menu_devices', adminMiddleware, async (ctx: any) => {
-    const count = await db.device.count();
-    ctx.editMessageText(
-      `📱 ZROK DEVICES\n\nTotal linked devices: ${count}\nStatus: Synchronized`,
-      Markup.inlineKeyboard([[Markup.button.callback('◀️ Back to Menu', 'menu_home')]])
-    );
+  bot.action(/^user_resume_(.+)$/, adminMiddleware, async (ctx: any) => {
+    await LicenseService.resumeIndividual(ctx.match[1], getAdminId(ctx));
+    ctx.answerCbQuery('License reactivated.');
+    ctx.editMessageText('✓ License reactivated.', Markup.inlineKeyboard([[Markup.button.callback('◀️ Back', `user_view_${ctx.match[1]}`)]]));
   });
 
-  bot.action('menu_analytics', adminMiddleware, async (ctx: any) => {
+  bot.action(/^user_revoke_ask_(.+)$/, adminMiddleware, (ctx: any) => {
+    ctx.editMessageText('⚠️ CONFIRM REVOKE\nThis action cannot be undone.', Markup.inlineKeyboard([
+      [Markup.button.callback('Confirm Revoke', `user_revoke_confirm_${ctx.match[1]}`)],
+      [Markup.button.callback('Cancel', `user_view_${ctx.match[1]}`)]
+    ]));
+  });
+
+  bot.action(/^user_revoke_confirm_(.+)$/, adminMiddleware, async (ctx: any) => {
+    await LicenseService.revoke(ctx.match[1], getAdminId(ctx));
+    ctx.answerCbQuery('License revoked.');
+    ctx.editMessageText('✓ License revoked.', Markup.inlineKeyboard([[Markup.button.callback('◀️ Back', 'menu_users')]]));
+  });
+
+  // --- ANALYTICS ---
+  bot.action('menu_stats', adminMiddleware, async (ctx: any) => {
     const keysCount = await db.licenseKey.count();
     const activeCount = await db.licenseKey.count({ where: { status: LicenseStatus.ACTIVE } });
     const devicesCount = await db.device.count();
     ctx.editMessageText(
       `📊 ZROK ANALYTICS\n\n• Total Keys: ${keysCount}\n• Active Keys: ${activeCount}\n• Linked Devices: ${devicesCount}`,
-      Markup.inlineKeyboard([[Markup.button.callback('◀️ Back to Menu', 'menu_home')]])
+      Markup.inlineKeyboard([[Markup.button.callback('◀️ Back', 'menu_home')]])
     );
   });
 
-  bot.action('menu_activity', adminMiddleware, async (ctx: any) => {
-    const logs = await db.auditLog.findMany({ take: 5, orderBy: { createdAt: 'desc' } });
+  bot.action('menu_logs', adminMiddleware, async (ctx: any) => {
+    const logs = await db.auditLog.findMany({ take: 10, orderBy: { createdAt: 'desc' } });
     let msg = `📜 RECENT ACTIVITY:\n\n`;
     for (const log of logs) {
       msg += `• [${log.action}] (${log.createdAt.toLocaleTimeString()})\n`;
     }
-    ctx.editMessageText(msg, Markup.inlineKeyboard([[Markup.button.callback('◀️ Back to Menu', 'menu_home')]]));
+    ctx.editMessageText(msg, Markup.inlineKeyboard([[Markup.button.callback('◀️ Back', 'menu_home')]]));
   });
-
-  bot.action('menu_system', adminMiddleware, (ctx: any) => {
-    ctx.editMessageText(
-      `⚙️ ZROK SYSTEM\n\nVersion: 1.0.0\nCore: ZROK Core\nEnvironment: Production`,
-      Markup.inlineKeyboard([[Markup.button.callback('◀️ Back to Menu', 'menu_home')]])
-    );
-  });
-
-  bot.command('key_create', adminMiddleware, async (ctx) => {
-    const args = ctx.message.text.split(' ');
-    if (args.length < 2) return ctx.reply('Usage: /key_create <days> [maxDevices]');
-    
-    const days = parseInt(args[1]);
-    const maxDevices = args[2] ? parseInt(args[2]) : 1;
-    
-    try {
-        const { keyIdentifier, rawSecret } = await LicenseService.createLicense(days, maxDevices, 'Created via Telegram', getAdminId(ctx));
-        ctx.reply(`✓ ZROK License Created:\nID: ${keyIdentifier}\nSecret: ${rawSecret}`);
-    } catch (e: any) {
-        ctx.reply(`Error: ${e.message}`);
-    }
-  });
-
-  bot.command('key_list', adminMiddleware, async (ctx) => {
-      const licenses = await db.licenseKey.findMany({ take: 20, orderBy: { createdAt: 'desc' } });
-      let message = 'ZROK Licenses (ID - Status):\n';
-      for (const l of licenses) {
-          message += `${l.keyIdentifier} - ${l.status}\n`;
-      }
-      ctx.reply(message || 'No licenses found');
-  });
-
-  bot.command('key_info', adminMiddleware, async (ctx) => {
-      const args = ctx.message.text.split(' ');
-      if (args.length < 2) return ctx.reply('Usage: /key_info <keyIdentifier>');
-      
-      const lic = await db.licenseKey.findUnique({ where: { keyIdentifier: args[1] }, include: { devices: true } });
-      if (!lic) return ctx.reply('License not found');
-      
-      ctx.reply(`
-ZROK License Info:
-ID: ${lic.keyIdentifier}
-Status: ${lic.status}
-Paused: ${lic.pausedIndividual || lic.pausedGlobal ? 'YES' : 'NO'}
-Expires: ${lic.expiresAt?.toISOString() || 'N/A (Not activated)'}
-Devices: ${lic.devices.length}/${lic.maxDevices}
-      `);
-  });
-
-  bot.command('key_pause', adminMiddleware, async (ctx) => {
-      const args = ctx.message.text.split(' ');
-      if (args.length < 2) return ctx.reply('Usage: /key_pause <keyIdentifier>');
-      
-      const lic = await db.licenseKey.findUnique({ where: { keyIdentifier: args[1] } });
-      if (!lic) return ctx.reply('License not found');
-      
-      await LicenseService.pauseIndividual(lic.id, getAdminId(ctx));
-      ctx.reply(`✓ License ${lic.keyIdentifier} paused. Validity frozen.`);
-  });
-
-  bot.command('key_resume', adminMiddleware, async (ctx) => {
-      const args = ctx.message.text.split(' ');
-      if (args.length < 2) return ctx.reply('Usage: /key_resume <keyIdentifier>');
-      
-      const lic = await db.licenseKey.findUnique({ where: { keyIdentifier: args[1] } });
-      if (!lic) return ctx.reply('License not found');
-      
-      await LicenseService.resumeIndividual(lic.id, getAdminId(ctx));
-      ctx.reply(`✓ License ${lic.keyIdentifier} resumed.`);
-  });
-
-  bot.command('key_revoke', adminMiddleware, async (ctx) => {
-      const args = ctx.message.text.split(' ');
-      if (args.length < 2) return ctx.reply('Usage: /key_revoke <keyIdentifier>');
-      
-      const lic = await db.licenseKey.findUnique({ where: { keyIdentifier: args[1] } });
-      if (!lic) return ctx.reply('License not found');
-      
-      ctx.reply(`Confirm revoke for ${args[1]}?`, Markup.inlineKeyboard([
-          Markup.button.callback('Yes, Revoke', `revoke_${lic.id}`),
-          Markup.button.callback('Cancel', 'cancel')
-      ]));
-  });
-
-  bot.action(/^revoke_(.+)$/, adminMiddleware, async (ctx: any) => {
-      await LicenseService.revoke(ctx.match[1], getAdminId(ctx));
-      ctx.editMessageText('✓ License revoked successfully.');
-  });
-
-  bot.command('keys_pause_all', adminMiddleware, async (ctx) => {
-      ctx.reply('Confirm pause ALL active licenses?', Markup.inlineKeyboard([
-          Markup.button.callback('Confirm Pause All', 'pause_all'),
-          Markup.button.callback('Cancel', 'cancel')
-      ]));
-  });
-
-  bot.action('pause_all', adminMiddleware, async (ctx: any) => {
-      await LicenseService.pauseAll(getAdminId(ctx));
-      ctx.editMessageText('✓ All licenses paused successfully.');
-  });
-
-  bot.command('keys_resume_all', adminMiddleware, async (ctx) => {
-      ctx.reply('Confirm resume ALL paused licenses?', Markup.inlineKeyboard([
-          Markup.button.callback('Confirm Resume All', 'resume_all'),
-          Markup.button.callback('Cancel', 'cancel')
-      ]));
-  });
-
-  bot.action('resume_all', adminMiddleware, async (ctx: any) => {
-      await LicenseService.resumeAll(getAdminId(ctx));
-      ctx.editMessageText('✓ All licenses resumed successfully.');
-  });
-
-  bot.action('cancel', (ctx: any) => ctx.editMessageText('Action cancelled.'));
 
   bot.launch();
-  console.log('ZROK Control Bot started');
+  console.log('ZROK Control Bot started (Inline Menu version)');
   return bot;
 };

@@ -21,6 +21,8 @@ model LicenseKey {
   id                   String        @id @default(uuid())
   keyIdentifier        String        @unique
   keyHash              String        @unique
+  maskedKey            String?
+  username             String?       @unique
   status               LicenseStatus @default(ACTIVE)
   durationDays         Int           @default(30)
   expiresAt            DateTime?
@@ -36,6 +38,18 @@ model LicenseKey {
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
   devices              Device[]
+  usernameTokens       UsernameToken[]
+}
+
+model UsernameToken {
+  id               String     @id @default(uuid())
+  tokenHash        String     @unique
+  licenseKeyId     String
+  deviceIdentifier String
+  expiresAt        DateTime
+  used             Boolean    @default(false)
+  createdAt        DateTime   @default(now())
+  licenseKey       LicenseKey @relation(fields: [licenseKeyId], references: [id], onDelete: Cascade)
 }
 
 model Device {
@@ -44,6 +58,7 @@ model Device {
   licenseKeyId     String
   platform         String?
   appVersion       String?
+  lastIp           String?
   firstSeenAt      DateTime   @default(now())
   lastSeenAt       DateTime   @default(now())
   active           Boolean    @default(true)

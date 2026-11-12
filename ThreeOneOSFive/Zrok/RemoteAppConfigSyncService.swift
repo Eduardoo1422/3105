@@ -15,7 +15,7 @@ import UIKit
 /// 2. Find your computer's local network IP address (e.g. `192.168.1.50`).
 /// 3. Set `ZROK_API_URL` to `http://192.168.1.50:3000/api/v1` in your Xcode scheme environment variables.
 struct ZrokEnvironment {
-    static let developmentBaseURL = "http://localhost:3000/api/v1"
+    static let developmentBaseURL = "https://zrok-api.onrender.com/api/v1"
     
     static var baseURL: String? {
         // 1. Check Info.plist for ZrokAPIUrl key
@@ -29,12 +29,7 @@ struct ZrokEnvironment {
         if let envUrl = ProcessInfo.processInfo.environment["ZROK_API_URL"], !envUrl.isEmpty {
             return envUrl
         }
-        #if DEBUG
         return developmentBaseURL
-        #else
-        // In RELEASE mode, localhost fallback is prohibited. Return nil if unconfigured.
-        return nil
-        #endif
     }
 }
 
